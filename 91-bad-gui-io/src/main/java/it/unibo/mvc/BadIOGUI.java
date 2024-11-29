@@ -10,9 +10,14 @@ import java.awt.Dimension;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.BufferedInputStream;
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.PrintStream;
+import java.io.Reader;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.List;
@@ -40,9 +45,28 @@ public class BadIOGUI {
      */
     public BadIOGUI() {
         final JPanel canvas = new JPanel();
+        final JPanel es = new JPanel();
+        es.setLayout(new BoxLayout(es, BoxLayout.X_AXIS));
         canvas.setLayout(new BorderLayout());
+        canvas.add(es, BorderLayout.CENTER);
         final JButton write = new JButton("Write on file");
-        canvas.add(write, BorderLayout.CENTER);
+        es.add(write);
+        final JButton read = new JButton("Read");
+        read.addActionListener(new ActionListener() {
+
+            @Override
+            public void actionPerformed(ActionEvent arg0) {
+                try (BufferedReader bir = new BufferedReader(new FileReader(PATH))) {
+                    String c;
+                    while((c = bir.readLine()) != null) {
+                        System.out.println(c);
+                    }
+                } catch (IOException e) {
+                    JOptionPane.showMessageDialog(read, "file not found");
+                }
+            }
+        });
+        es.add(read);
         frame.setContentPane(canvas);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         /*
@@ -87,6 +111,7 @@ public class BadIOGUI {
          * on screen. Results may vary, but it is generally the best choice.
          */
         frame.setLocationByPlatform(true);
+        frame.pack();
         /*
          * OK, ready to push the frame onscreen
          */
